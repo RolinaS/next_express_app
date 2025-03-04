@@ -4,13 +4,17 @@ import { User } from './User';
 import { Aliment } from './Aliment';
 
 interface RecetteAttributes {
-  id: number;
+  id?: number; 
   user_id: number;
 }
 
 export class Recette extends Model<RecetteAttributes> implements RecetteAttributes {
   public id!: number;
   public user_id!: number;
+
+  // Timestamps
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
 }
 
 Recette.init(
@@ -45,9 +49,11 @@ Recette.belongsToMany(Aliment, {
   through: 'recettes_aliments',
   foreignKey: 'recette_id',
   otherKey: 'aliment_id',
+  as: 'aliments'
 });
 Aliment.belongsToMany(Recette, {
   through: 'recettes_aliments',
   foreignKey: 'aliment_id',
   otherKey: 'recette_id',
+  as: 'recettes'
 });

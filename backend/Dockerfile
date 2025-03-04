@@ -7,17 +7,17 @@ WORKDIR /app
 # Copier les fichiers de dépendances
 COPY package*.json ./
 
-# Installer les dépendances
+# Installer toutes les dépendances (y compris devDependencies)
 RUN npm install
 
 # Copier le reste des fichiers
 COPY . .
 
-# Construire l'application TypeScript
-RUN npm run build
+# Créer les dossiers nécessaires
+RUN mkdir -p dist public
 
 # Exposer le port
 EXPOSE 3000
 
-# Commande de démarrage en développement
+# Commande de démarrage en développement avec hot reload
 CMD ["npm", "run", "dev"]
