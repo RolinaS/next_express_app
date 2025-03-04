@@ -1,42 +1,47 @@
-import { Table, Column, Model, DataType, CreatedAt, UpdatedAt } from 'sequelize-typescript';
+import { Model, DataTypes } from 'sequelize';
+import sequelize from '../config/database';
 
-@Table({
-  tableName: 'users',
-  timestamps: true
-})
-export class User extends Model {
-  @Column({
-    type: DataType.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
-  })
-  id!: number;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false
-  })
-  name!: string;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-    unique: true,
-    validate: {
-      isEmail: true
-    }
-  })
-  email!: string;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false
-  })
-  password_hash!: string;
-
-  @CreatedAt
-  created_at!: Date;
-
-  @UpdatedAt
-  updated_at!: Date;
+interface UserAttributes {
+  id: number;
+  nom: string;
+  prenom: string;
+  mail: string;
 }
+
+export class User extends Model<UserAttributes> implements UserAttributes {
+  public id!: number;
+  public nom!: string;
+  public prenom!: string;
+  public mail!: string;
+}
+
+User.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    nom: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    prenom: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    mail: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        isEmail: true,
+      },
+    },
+  },
+  {
+    sequelize,
+    tableName: 'users',
+    timestamps: false,
+  }
+);

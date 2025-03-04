@@ -1,29 +1,46 @@
 -- Création de la table users
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    nom VARCHAR(255) NOT NULL,
+    prenom VARCHAR(255) NOT NULL,
+    mail VARCHAR(255) UNIQUE NOT NULL
 );
 
--- Création d'un trigger pour mettre à jour updated_at
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = CURRENT_TIMESTAMP;
-    RETURN NEW;
-END;
-$$ language 'plpgsql';
+-- Création de la table aliments
+CREATE TABLE IF NOT EXISTS aliments (
+    id SERIAL PRIMARY KEY,
+    nom VARCHAR(255) UNIQUE NOT NULL,
+    glucide FLOAT NOT NULL,
+    proteine FLOAT NOT NULL,
+    lipide FLOAT NOT NULL,
+    kcal FLOAT NOT NULL
+);
 
-CREATE TRIGGER update_users_updated_at
-    BEFORE UPDATE ON users
-    FOR EACH ROW
-    EXECUTE FUNCTION update_updated_at_column();
+-- Création de la table recettes
+CREATE TABLE IF NOT EXISTS recettes (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
 
--- Insertion de quelques données de test
-INSERT INTO users (name, email, password_hash) VALUES
-    ('John Doe', 'john@example.com', 'hashed_password_1'),
-    ('Jane Doe', 'jane@example.com', 'hashed_password_2')
-ON CONFLICT (email) DO NOTHING;
+-- Création de la table pivot recettes_aliments
+CREATE TABLE IF NOT EXISTS recettes_aliments (
+    id SERIAL PRIMARY KEY,
+    recette_id INTEGER NOT NULL,
+    aliment_id INTEGER NOT NULL,
+    poids FLOAT NOT NULL,
+    FOREIGN KEY (recette_id) REFERENCES recettes(id) ON DELETE CASCADE,
+    FOREIGN KEY (aliment_id) REFERENCES aliments(id) ON DELETE CASCADE
+);
+
+-- Insertion de données de test
+INSERT INTO users (nom, prenom, mail) VALUES
+    ('Doe', 'John', 'john.doe@example.com'),
+    ('Doe', 'Jane', 'jane.doe@example.com')
+ON CONFLICT (mail) DO NOTHING;
+
+INSERT INTO aliments (nom, glucide, proteine, lipide, kcal) VALUES
+    ('Riz blanc cuit', 28.2, 2.7, 0.3, 130),
+    ('Poulet (blanc)', 0, 31, 3.6, 165),
+    ('Oeuf', 0.7, 13, 11, 155)
+ON CONFLICT (nom) DO NOTHING;

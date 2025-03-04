@@ -49,6 +49,7 @@ services:
       NODE_ENV: development
       DATABASE_URL: postgresql://admin:admin123@postgres:5432/app_db
       PORT: 3000
+      CORS_ORIGIN: http://localhost:3001
     volumes:
       - ./backend:/app
       - /app/node_modules
@@ -66,9 +67,13 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_URL: http://localhost:3000/api
     volumes:
       - ./frontend:/app
       - /app/node_modules
+      - /app/.next
     ports:
       - "3001:3000"
     networks:

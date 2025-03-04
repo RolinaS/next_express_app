@@ -1,11 +1,10 @@
-import { Sequelize } from 'sequelize-typescript';
+import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
 const sequelize = new Sequelize(process.env.DATABASE_URL || 'postgresql://admin:admin123@localhost:5432/app_db', {
   dialect: 'postgres',
-  models: [__dirname + '/../models'],
   logging: process.env.NODE_ENV === 'development' ? console.log : false,
   dialectOptions: {
     ssl: process.env.NODE_ENV === 'production'
